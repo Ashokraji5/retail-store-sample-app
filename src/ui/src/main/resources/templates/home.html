@@ -4,6 +4,7 @@
   th:replace="~{fragments/bare :: bare (~{::body})}"
 >
   <body>
+
     <!-- ================= NAVBAR ================= -->
     <nav
       class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
@@ -13,7 +14,7 @@
         <div class="max-w-4xl mx-auto px-4">
           <div class="flex justify-between items-center h-16">
 
-            <!-- Brand -->
+            <!-- Retail Store Brand -->
             <a th:href="@{/}">
               <div class="flex items-center">
                 <i
@@ -21,19 +22,19 @@
                 ></i>
 
                 <span
-                  class="ml-2 text-xl font-bold text-white switch"
+                  class="ml-2 text-xl font-bold text-white switch tracking-wide"
                 >
                   Ashok Retail Store
                 </span>
               </div>
             </a>
 
-            <!-- Navigation -->
+            <!-- Navigation - unchanged functionality -->
             <div class="flex items-center space-x-12">
               <a
                 id="menu-home"
                 th:href="@{/}"
-                class="text-white/90 hover:text-white transition duration-300 text-sm switch"
+                class="text-white/90 hover:text-white transition duration-300 text-sm switch font-medium"
                 th:text="#{nav.home}"
               >
                 Home
@@ -42,25 +43,25 @@
               <a
                 id="menu-catalog"
                 th:href="@{/catalog}"
-                class="text-white/90 hover:text-white transition duration-300 text-sm switch"
+                class="text-white/90 hover:text-white transition duration-300 text-sm switch font-medium"
                 th:text="#{nav.catalog}"
               >
-                Products
+                Catalog
               </a>
             </div>
 
-            <!-- Cart -->
+            <!-- Cart - backend logic unchanged -->
             <div class="flex items-center">
               <a th:href="@{/cart}" id="go-cart">
                 <button
-                  class="flex items-center gap-2 p-2 text-white hover:text-orange-300"
+                  class="flex items-center gap-2 p-2 text-white hover:text-orange-300 transition-colors"
                 >
                   <i
                     class="fas fa-shopping-cart text-lg switch"
                   ></i>
 
                   <span
-                    class="bg-orange-500 text-white text-xs rounded-full h-5 min-w-[1.25rem] flex items-center justify-center switch-other"
+                    class="bg-orange-500 text-white text-xs font-bold rounded-full h-5 min-w-[1.25rem] flex items-center justify-center switch-other"
                     th:text="${cart.numItems}"
                   >
                     3
@@ -74,10 +75,12 @@
       </div>
 
       <script>
+        // Navbar scroll behavior
         const navbar = document.getElementById("navbar");
 
         window.addEventListener("scroll", () => {
           if (window.scrollY > 50) {
+
             navbar
               .querySelector("div.menu-marker")
               .classList.remove("bg-transparent");
@@ -85,10 +88,10 @@
             navbar
               .querySelector("div.menu-marker")
               .classList.add(
-                "bg-white/90",
+                "bg-white/95",
                 "backdrop-blur-md",
                 "border-b",
-                "border-blue-100"
+                "border-orange-100"
               );
 
             navbar
@@ -99,21 +102,25 @@
                   "text-white/90"
                 );
 
-                element.classList.add("text-blue-800");
+                element.classList.add("text-blue-900");
               });
 
-            navbar.querySelectorAll("span.switch-other").forEach((element) => {
-              element.classList.remove(
-                "bg-white",
-                "text-gray-700"
-              );
+            navbar
+              .querySelectorAll("span.switch-other")
+              .forEach((element) => {
+                element.classList.remove(
+                  "bg-white",
+                  "text-gray-700"
+                );
 
-              element.classList.add(
-                "bg-orange-500",
-                "text-white"
-              );
-            });
+                element.classList.add(
+                  "bg-orange-500",
+                  "text-white"
+                );
+              });
+
           } else {
+
             navbar
               .querySelector("div.menu-marker")
               .classList.add("bg-transparent");
@@ -121,41 +128,45 @@
             navbar
               .querySelector("div.menu-marker")
               .classList.remove(
-                "bg-white/90",
+                "bg-white/95",
                 "backdrop-blur-md",
                 "border-b",
-                "border-blue-100"
+                "border-orange-100"
               );
 
             navbar
               .querySelectorAll("a.switch, span.switch, i.switch")
               .forEach((element) => {
                 element.classList.add("text-white");
-                element.classList.remove("text-blue-800");
+                element.classList.remove("text-blue-900");
               });
 
-            navbar.querySelectorAll("span.switch-other").forEach((element) => {
-              element.classList.add(
-                "bg-orange-500",
-                "text-white"
-              );
+            navbar
+              .querySelectorAll("span.switch-other")
+              .forEach((element) => {
+                element.classList.add(
+                  "bg-orange-500",
+                  "text-white"
+                );
 
-              element.classList.remove(
-                "bg-white",
-                "text-gray-700"
-              );
-            });
+                element.classList.remove(
+                  "bg-white",
+                  "text-gray-700"
+                );
+              });
           }
         });
       </script>
     </nav>
+
 
     <!-- ================= HERO SECTION ================= -->
 
     <section
       class="relative flex items-center justify-center overflow-hidden h-[500px]"
     >
-      <!-- Background -->
+
+      <!-- Background image - unchanged -->
       <div class="absolute inset-0">
 
         <img
@@ -164,10 +175,10 @@
           class="w-full h-full object-cover"
         />
 
-        <!-- Blue overlay -->
-        <div class="absolute inset-0 bg-blue-950/75"></div>
+        <!-- Retail blue overlay -->
+        <div class="absolute inset-0 bg-blue-950/80"></div>
 
-        <!-- Grid -->
+        <!-- Subtle retail grid -->
         <div class="absolute inset-0">
           <svg width="100%" height="100%">
             <defs>
@@ -199,14 +210,25 @@
         ></div>
       </div>
 
-      <!-- Hero Content -->
+
+      <!-- Hero content -->
       <div
         class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
       >
+
+        <div class="mb-4">
+          <span
+            class="inline-block px-4 py-2 rounded-full bg-orange-500/20 border border-orange-400/40 text-orange-300 text-sm font-semibold tracking-wide"
+          >
+            QUALITY • VALUE • TRUST
+          </span>
+        </div>
+
         <h1
           class="text-4xl sm:text-5xl font-bold text-white mb-6"
         >
           Welcome to
+
           <span class="text-orange-400">
             Ashok Retail Store
           </span>
@@ -219,11 +241,13 @@
           experience you can trust.
         </p>
 
+        <!-- Existing catalog link preserved -->
         <div class="flex justify-center gap-4">
+
           <a
             id="shop-now"
             th:href="@{/catalog}"
-            class="relative inline-flex items-center gap-2 px-6 py-3 text-lg font-semibold text-white bg-orange-500 rounded-md hover:bg-orange-600 transition-colors overflow-hidden border border-orange-300"
+            class="relative inline-flex items-center gap-2 px-7 py-3 text-lg font-semibold text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors overflow-hidden border border-orange-300 shadow-lg"
           >
             <span class="relative z-10">
               Shop Now
@@ -232,59 +256,76 @@
             <i
               class="fas fa-arrow-right relative z-10"
             ></i>
+
           </a>
+
         </div>
+
       </div>
     </section>
+
 
     <!-- ================= PRODUCTS ================= -->
 
     <main class="flex-grow">
 
-      <section class="max-w-4xl mx-auto px-4 py-8">
+      <section class="max-w-4xl mx-auto px-4 py-10">
 
         <div
           class="flex justify-between items-center mb-8 border-b border-gray-200 pb-4"
         >
+
           <h2
             class="text-2xl font-bold text-blue-900"
             th:text="#{home.popularitems}"
           >
-            Popular Products
+            Popular Items
           </h2>
 
+          <!-- Existing catalog link preserved -->
           <a
             th:href="@{/catalog}"
-            class="inline-flex items-center text-sm text-orange-500 hover:text-orange-600 font-medium transition duration-150 ease-in-out"
+            class="inline-flex items-center text-sm text-orange-500 hover:text-orange-600 font-semibold transition duration-150 ease-in-out border-b-2 border-transparent hover:border-orange-500"
           >
+
             <th:block th:text="#{home.viewfullcatalog}">
               View Full Catalog
             </th:block>
 
             <i class="fas fa-arrow-right ml-2"></i>
+
           </a>
+
         </div>
 
+
+        <!-- Existing backend condition preserved -->
         <div
           class="text-center mb-4 text-sm text-gray-400"
           th:if="${!disableDemoWarnings}"
         >
-          Products displayed for demonstration purposes.
+          These products are for demonstration purposes only
         </div>
 
+
+        <!-- Existing product loop preserved -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           <div
             th:each="item : ${catalog.products}"
             class="border-b md:border-0 border-gray-300"
           >
+
             <div
               th:replace="~{fragments/product_card :: card(${item}) }"
             ></div>
+
           </div>
 
         </div>
+
       </section>
+
 
       <!-- ================= WHY CHOOSE US ================= -->
 
@@ -298,12 +339,20 @@
             Why Choose Ashok Retail Store?
           </h2>
 
+          <p class="text-center text-gray-600 mb-10">
+            A shopping experience built around quality,
+            convenience and customer satisfaction.
+          </p>
+
+
           <div
             class="grid grid-cols-1 md:grid-cols-3 gap-8"
           >
 
-            <!-- Feature 1 -->
-            <div class="text-center p-6">
+            <!-- Fast Delivery -->
+            <div
+              class="text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+            >
 
               <div class="text-orange-500 mb-4">
                 <i
@@ -312,7 +361,7 @@
               </div>
 
               <h3
-                class="text-xl font-semibold text-gray-800 mb-2"
+                class="text-xl font-semibold text-blue-900 mb-2"
               >
                 Fast Delivery
               </h3>
@@ -324,8 +373,11 @@
 
             </div>
 
-            <!-- Feature 2 -->
-            <div class="text-center p-6">
+
+            <!-- Quality -->
+            <div
+              class="text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+            >
 
               <div class="text-orange-500 mb-4">
                 <i
@@ -334,20 +386,23 @@
               </div>
 
               <h3
-                class="text-xl font-semibold text-gray-800 mb-2"
+                class="text-xl font-semibold text-blue-900 mb-2"
               >
                 Quality Products
               </h3>
 
               <p class="text-gray-600">
-                We focus on quality products
-                at competitive prices.
+                Carefully selected products at
+                competitive prices.
               </p>
 
             </div>
 
-            <!-- Feature 3 -->
-            <div class="text-center p-6">
+
+            <!-- Support -->
+            <div
+              class="text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+            >
 
               <div class="text-orange-500 mb-4">
                 <i
@@ -356,22 +411,25 @@
               </div>
 
               <h3
-                class="text-xl font-semibold text-gray-800 mb-2"
+                class="text-xl font-semibold text-blue-900 mb-2"
               >
                 Customer Support
               </h3>
 
               <p class="text-gray-600">
-                Our support team is ready to
-                help whenever you need us.
+                Our support team is ready to help
+                whenever you need us.
               </p>
 
             </div>
 
           </div>
+
         </div>
+
       </section>
 
     </main>
+
   </body>
 </html>
