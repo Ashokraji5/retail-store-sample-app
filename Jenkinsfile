@@ -7,24 +7,29 @@ pipeline {
     }
 
     environment {
-        IMAGE_NAME = 'ashokraji/retail-ui'
+        DOCKER_USERNAME = 'ashokraji'
+        VERSION = "1.0.${BUILD_NUMBER}"
+        DOCKER_IMAGE = "${DOCKER_USERNAME}/retail-ui:${VERSION}"
         UI_DIR = 'src/ui'
-        DOCKER_IMAGE = "${IMAGE_NAME}:${BUILD_NUMBER}"
     }
 
     stages {
+
         stage('Checkout Code') {
             steps {
                 git branch: 'master',
-                    url: 'https://github.com/Ashokraji5/war-web-project.git',
+                    url: 'https://github.com/Ashokraji5/retail-store-sample-app.git',
                     credentialsId: 'github-credentials'
             }
         }
 
-        stage('Verify Maven') {
+        stage('Verify Tools') {
             steps {
-                sh 'mvn -version'
-                sh 'docker --version'
+                sh '''
+                    git --version
+                    mvn -version
+                    docker --version
+                '''
             }
         }
 
@@ -49,9 +54,9 @@ pipeline {
                 dir("${UI_DIR}") {
                     sh '''
                         set -eu
+
                         docker build \
                             -t "$DOCKER_IMAGE" \
-                            -t "$IMAGE_NAME:latest" \
                             .
                     '''
                 }
@@ -67,7 +72,6 @@ pipeline {
                     sh '''
                         set -eu
                         docker push "$DOCKER_IMAGE"
-                        docker push "$IMAGE_NAME:latest"
                     '''
                 }
             }
@@ -76,7 +80,7 @@ pipeline {
 
     post {
         success {
-            echo 'UI Docker image built and pushed successfully.'
+            echo "UI image pushed successfully: ${DOCKER_IMAGE}"
         }
 
         failure {
