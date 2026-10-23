@@ -2,13 +2,17 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven'
+    }
+
     environment {
         IMAGE_NAME = 'ashokraji/retail-ui'
         UI_DIR = 'src/ui'
+        DOCKER_IMAGE = "${IMAGE_NAME}:${BUILD_NUMBER}"
     }
 
     stages {
-
         stage('Checkout Code') {
             steps {
                 git branch: 'master',
@@ -34,42 +38,30 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Build') {
             steps {
                 dir("${UI_DIR}") {
                     sh '''
                         set -eu
-
                         docker build \
-                          -t "$IMAGE_NAME:$BUILD_NUMBER" \
-                          -t "$IMAGE_NAME:latest" \
-                          .
+                            -t "$DOCKER_IMAGE" \
+                            -t "$IMAGE_NAME:latest" \
+                            .
                     '''
                 }
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Push Docker Image') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-creds',
-                        usernameVariable: 'DH_USER',
-                        passwordVariable: 'DH_TOKEN'
-                    )
+                withDockerRegistry([
+                    credentialsId: 'dockerhub-credentials',
+                    url: 'https://index.docker.io/v1/'
                 ]) {
                     sh '''
-                        set +x
                         set -eu
-
-                        echo "$DH_TOKEN" | docker login \
-                          --username "$DH_USER" \
-                          --password-stdin
-
-                        docker push "$IMAGE_NAME:$BUILD_NUMBER"
+                        docker push "$DOCKER_IMAGE"
                         docker push "$IMAGE_NAME:latest"
-
-                        docker logout
                     '''
                 }
             }
@@ -78,7 +70,7 @@ pipeline {
 
     post {
         success {
-            echo 'UI image built and pushed successfully.'
+            echo 'UI Docker image built and pushed successfully.'
         }
 
         failure {
