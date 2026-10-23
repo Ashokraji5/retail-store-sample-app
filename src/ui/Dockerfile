@@ -1,3 +1,4 @@
+
 # =========================
 # Build Stage
 # =========================
@@ -7,22 +8,19 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build
 RUN dnf install -y \
     java-21-amazon-corretto-headless \
     maven \
-    which \
     tar \
     gzip \
     && dnf clean all
 
 WORKDIR /app
 
-COPY .mvn .mvn
-COPY mvnw .
 COPY pom.xml .
 
-RUN ./mvnw dependency:go-offline -B
+RUN mvn dependency:go-offline -B
 
 COPY src ./src
 
-RUN ./mvnw -DskipTests package
+RUN mvn -DskipTests package
 
 # =========================
 # Package Stage
