@@ -24,8 +24,7 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 dir("${UI_DIR}") {
-                    sh 'chmod +x mvnw'
-                    sh './mvnw test'
+                    sh 'mvn test'
                 }
             }
         }
@@ -33,7 +32,7 @@ pipeline {
         stage('Maven Build and Package') {
             steps {
                 dir("${UI_DIR}") {
-                    sh './mvnw -DskipTests package'
+                    sh 'mvn -DskipTests package'
                 }
             }
         }
