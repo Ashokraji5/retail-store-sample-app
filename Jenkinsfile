@@ -21,6 +21,13 @@ pipeline {
             }
         }
 
+        stage('Verify Maven') {
+            steps {
+                sh 'mvn -version'
+                sh 'docker --version'
+            }
+        }
+
         stage('Unit Tests') {
             steps {
                 dir("${UI_DIR}") {
