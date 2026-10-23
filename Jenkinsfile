@@ -17,7 +17,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'master',
+                git branch: 'main',
                     url: 'https://github.com/Ashokraji5/retail-store-sample-app.git',
                     credentialsId: 'github-credentials'
             }
