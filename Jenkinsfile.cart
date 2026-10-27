@@ -1,8 +1,14 @@
+
 pipeline {
     agent any
 
     tools {
         maven 'maven'
+    }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
     }
 
     environment {
@@ -26,32 +32,32 @@ pipeline {
                 sh '''
                     set -eu
                     git --version
+                    java -version
                     docker --version
                     trivy --version
                 '''
             }
         }
 
-        stage('Java Unit Tests') {
+        stage('Maven Tests') {
             steps {
                 dir("${CART_DIR}") {
                     sh '''
                         set -eu
                         chmod +x mvnw
-                        ./mvnw test
+                        ./mvnw -B test
                     '''
                 }
             }
         }
 
-        stage('Docker Build') {
+        stage('Build Docker Image') {
             steps {
                 dir("${CART_DIR}") {
                     sh '''
                         set -eu
-                        docker build \
-                            -t "$DOCKER_IMAGE" \
-                            .
+                        docker build --pull \
+                            -t "$DOCKER_IMAGE" .
                     '''
                 }
             }
@@ -63,7 +69,8 @@ pipeline {
                     set -eu
                     trivy image \
                         --severity HIGH,CRITICAL \
-                        --exit-code 0 \
+                        --ignore-unfixed \
+                        --exit-code 1 \
                         "$DOCKER_IMAGE"
                 '''
             }
@@ -88,9 +95,11 @@ pipeline {
         success {
             echo "Cart image pushed successfully: ${DOCKER_IMAGE}"
         }
+
         failure {
-            echo 'Cart pipeline failed. Check the failed stage.'
+            echo 'Pipeline failed. Check the first failing stage and its root error.'
         }
+
         always {
             echo 'Cart pipeline execution completed.'
         }
