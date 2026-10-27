@@ -1,64 +1,74 @@
+
+# =========================
 # Build Stage
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023 as build-env
+# =========================
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build-env
 
-RUN dnf --setopt=install_weak_deps=False install -q -y \
-    maven \
-    java-21-amazon-corretto-headless \
-    which \
-    tar \
-    gzip \
-    && \
-    dnf clean all
+RUN dnf --setopt=install_weak_deps=False install -y \
+        maven \
+        java-21-amazon-corretto-headless \
+        tar \
+        gzip \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf
 
-ARG JAR_PATH
+ENV JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-VOLUME /tmp
-WORKDIR /
+WORKDIR /build
 
-COPY .mvn .mvn
-COPY mvnw .
-COPY pom.xml .
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
 
-RUN ./mvnw dependency:go-offline -B -q
+RUN chmod +x mvnw \
+    && ./mvnw -B -q dependency:go-offline
 
-COPY ./src ./src
+COPY src/ src/
 
-RUN ./mvnw -DskipTests package -q && \
-    mv /target/carts-0.0.1-SNAPSHOT.jar /app.jar
+RUN ./mvnw -B -DskipTests package -q \
+    && set -eu \
+    && JAR="$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)" \
+    && test -n "$JAR" \
+    && cp "$JAR" /app.jar
 
 
-# Package Stage
+# =========================
+# Runtime Stage
+# =========================
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
 LABEL service="retail-cart"
 LABEL practice="v1.1"
 
-RUN dnf --setopt=install_weak_deps=False install -q -y \
-    java-21-amazon-corretto-headless \
-    shadow-utils \
-    && \
-    dnf clean all
+RUN dnf --setopt=install_weak_deps=False install -y \
+        java-21-amazon-corretto-headless \
+        shadow-utils \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf
 
 ENV APPUSER=appuser
 ENV APPUID=1000
 ENV APPGID=1000
 
-RUN useradd \
-    --home "/app" \
-    --create-home \
-    --user-group \
-    --uid "$APPUID" \
-    "$APPUSER"
+RUN groupadd --gid "${APPGID}" "${APPUSER}" \
+    && useradd \
+        --uid "${APPUID}" \
+        --gid "${APPGID}" \
+        --create-home \
+        --home-dir /app \
+        --shell /sbin/nologin \
+        "${APPUSER}"
 
-ENV JAVA_TOOL_OPTIONS=
+ENV JAVA_HOME=/usr/lib/jvm/java-21-amazon-corretto
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 ENV SPRING_PROFILES_ACTIVE=prod
 
 WORKDIR /app
-USER appuser
 
-COPY ./ATTRIBUTION.md ./LICENSES.md
-COPY --chown=appuser:appuser --from=build-env /app.jar .
+COPY --from=build-env --chown=appuser:appuser /app.jar /app/app.jar
+
+USER appuser
 
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/app.jar"]
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]
