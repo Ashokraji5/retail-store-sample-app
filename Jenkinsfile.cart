@@ -1,14 +1,11 @@
+
 pipeline {
     agent any
-
-    tools {
-        maven 'maven'
-    }
 
     environment {
         DOCKER_USERNAME = 'ashokraji'
         VERSION = "1.0.${BUILD_NUMBER}"
-        DOCKER_IMAGE = "${DOCKER_USERNAME}/retail-cart:${VERSION}"
+        DOCKER_IMAGE = "ashokraji/retail-cart:1.0.${BUILD_NUMBER}"
         CART_DIR = 'src/cart'
     }
 
@@ -33,13 +30,13 @@ pipeline {
             }
         }
 
-        stage('Maven Package - Practice Mode') {
+        stage('Maven Package') {
             steps {
                 dir("${CART_DIR}") {
                     sh '''
                         set -eu
                         chmod +x mvnw
-                        ./mvnw -DskipTests package
+                        ./mvnw -B -DskipTests package
                     '''
                 }
             }
@@ -86,7 +83,6 @@ pipeline {
     post {
         success {
             echo "Cart image pushed successfully: ${DOCKER_IMAGE}"
-            echo 'NOTE: Maven tests were skipped in practice mode.'
         }
 
         failure {
@@ -94,7 +90,7 @@ pipeline {
         }
 
         always {
-            echo 'Cart pipeline execution completed.'
+            echo 'Cart CI pipeline execution completed.'
         }
     }
 }
