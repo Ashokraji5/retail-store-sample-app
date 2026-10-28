@@ -5,7 +5,7 @@ pipeline {
     environment {
         DOCKER_USERNAME = 'ashokraji'
         VERSION = "1.0.${BUILD_NUMBER}"
-        DOCKER_IMAGE = "ashokraji/retail-cart:1.0.${BUILD_NUMBER}"
+        DOCKER_IMAGE = "${DOCKER_USERNAME}/retail-cart:${VERSION}"
         CART_DIR = 'src/cart'
     }
 
@@ -37,6 +37,10 @@ pipeline {
                         set -eu
                         chmod +x mvnw
                         ./mvnw -B -DskipTests package
+
+                        echo "Verifying Maven build output..."
+                        ls -lh target/*.jar
+                        test -n "$(find target -maxdepth 1 -type f -name '*.jar' -print -quit)"
                     '''
                 }
             }
@@ -83,10 +87,11 @@ pipeline {
     post {
         success {
             echo "Cart image pushed successfully: ${DOCKER_IMAGE}"
+            echo 'Maven packaging, image build, and security scan completed.'
         }
 
         failure {
-            echo 'Cart CI pipeline failed. Check the failed stage.'
+            echo 'Cart CI pipeline failed. Check the failed stage in the Jenkins console.'
         }
 
         always {
