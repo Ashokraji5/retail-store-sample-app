@@ -12,8 +12,9 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Use the SCM configuration from the Jenkins job.
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/Ashokraji5/retail-store-sample-app.git',
+                    credentialsId: 'github-credentials'
             }
         }
 
@@ -98,11 +99,11 @@ pipeline {
 
     post {
         success {
-            echo 'Cart CI pipeline completed successfully.'
+            echo "Cart CI pipeline completed. Image: ${DOCKER_IMAGE}"
         }
 
         failure {
-            echo 'Cart CI pipeline failed. Check the Jenkins console.'
+            echo 'Cart CI pipeline failed. Check the Jenkins console output.'
         }
 
         always {
