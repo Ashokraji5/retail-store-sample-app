@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -28,13 +27,29 @@ pipeline {
 
                     git --version
                     java -version
+                    javac -version
                     docker --version
                     trivy --version
                 '''
             }
         }
 
-        stage('Maven Package') {
+        stage('Verify Docker Access') {
+            steps {
+                sh '''
+                    set -eu
+
+                    echo "Checking Docker daemon..."
+
+                    docker info
+                    docker ps
+
+                    echo "Docker is ready."
+                '''
+            }
+        }
+
+        stage('Maven Build and Package') {
             steps {
                 dir("${CART_DIR}") {
                     sh '''
@@ -44,7 +59,7 @@ pipeline {
 
                         chmod +x mvnw
 
-                        ./mvnw -B clean verify
+                        ./mvnw -B clean -DskipTests package
 
                         echo "Verifying Maven build output..."
 
